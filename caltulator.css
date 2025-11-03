@@ -1,0 +1,41 @@
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* make the body fill the whole space*/
+   
+}
+#calculator{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #98AFC7;
+    height: 80%;
+    width: 300px;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+#screen{
+    border-radius: 0.5rem;
+    background-color: antiquewhite;
+    height: 45px;
+    width: 90%;
+    justify-self: center;
+   margin-bottom: 25px;
+   margin-top: 10px;
+}
+
+button{
+    border-radius: 0.5rem;
+    width: 60px;
+    height: 80px;
+    background-color: #E8E9EB;
+}
+#buttons{
+    display: grid;
+    grid-template-columns: repeat(4,65px);
+    gap: 3px;
+    justify-content: center;
+    
+}
