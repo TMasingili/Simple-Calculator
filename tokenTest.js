@@ -1,94 +1,78 @@
+function tokenize(input) {
+    let tokens = [];
+    let tempNum = [];
+    let numbers = ["0","1","2","3","4","5","6","7","8","9","."];
+    let operators = ["*", "+", "-", "/", "%", "(", ")"];
 
-function tokenize(input){
-   let tokens= [];
-   let tempNum=[];
-   let numbers = ["0","1","2","3","4","5","6","7","8","9","."]; // list of numbers used in caculator
-   let operators = ["*","+","-","/","%","(",")","del"]
-
-   for( let char of input){
-      if(numbers.includes(char)){
-        tempNum.push(char);
-      }
-      else if(operators.includes(char)){
-        if(tempNum.length){
-            tokens.push(tempNum.join(""));
-            tempNum=[];
+    for (let char of input) {
+        if (numbers.includes(char)) {
+            tempNum.push(char);
+        } else if (operators.includes(char)) {
+            if (tempNum.length) {
+                tokens.push(tempNum.join(""));
+                tempNum = [];
+            }
+            tokens.push(char);
         }
-         tokens.push(char)
-        }
-   }
-    if(tempNum.length){
-         tokens.push(tempNum.join(""));
     }
-   return tokens;
+    if (tempNum.length) {
+        tokens.push(tempNum.join(""));
+    }
+    return tokens;
 }
 
+function shunting_yard(tokens) {
+    let operatorStack = [];
+    let output = [];
+    let precedence = { "*": 3, "/": 3, "+": 2, "-": 2 };
 
-function shunting_yard(tokens){
-    let operatorStack =[];
-    let output =[];
-    let result=[];
-
-
-    let precedence ={
-        "*":3,
-        "/":3,
-        "+":2,
-        "-":2
-    }
-
-    // actual work
-    for(let token of tokens){
-        if(token in precedence){
-            while(operatorStack.length){
-                let topOperator = operatorStack[operatorStack.length-1]; // get operator at the top
-                if(precedence[token]>precedence[topOperator]){
-                    break;
-                }
-                operatorStack.pop();
-                output.push(topOperator);
+    for (let token of tokens) {
+        if (!isNaN(token)) {
+            output.push(token);
+        } else if (token === "(") {
+            operatorStack.push(token);
+        } else if (token === ")") {
+            while (operatorStack.length && operatorStack[operatorStack.length - 1] !== "(") {
+                output.push(operatorStack.pop());
+            }
+            operatorStack.pop(); // remove "("
+        } else if (token in precedence) {
+            while (
+                operatorStack.length &&
+                (operatorStack[operatorStack.length - 1] in precedence) &&
+                precedence[operatorStack[operatorStack.length - 1]] >= precedence[token]
+            ) {
+                output.push(operatorStack.pop());
             }
             operatorStack.push(token);
         }
-        else{
-            output.push(token); // push directly to ouput
-        }
     }
-     while(operatorStack.length){
-            output.push(operatorStack.pop());
-     }
-     console.log("output = "+ output);
 
-    for( let element of output){
-        if(!(element in precedence)){
-            result.push(parseFloat(element));
-        }
-        else{
-            let right = result.pop();
-            let left = result.pop();
-            if (element == "+"){
-                result.push(left + right);
-            }
-            if(element == "-"){
-                result.push(left - right);
-            }
+    // Flush remaining operators
+    while (operatorStack.length) {
+        output.push(operatorStack.pop());
+    }
 
-            if( element == "/"){
-                result.push(left/right);
-            }
-            if(element=="*"){
-                result.push(left*right);
+    console.log("Postfix output:", output);
+
+    // Evaluate postfix
+    let stack = [];
+    for (let token of output) {
+        if (!isNaN(token)) {
+            stack.push(parseFloat(token));
+        } else {
+            let b = stack.pop();
+            let a = stack.pop();
+            switch (token) {
+                case "+": stack.push(a + b); break;
+                case "-": stack.push(a - b); break;
+                case "*": stack.push(a * b); break;
+                case "/": stack.push(a / b); break;
+                case "%": stack.push(a % b); break;
             }
         }
     }
-    console.log(result)
-    return result.pop();
-
+    return stack.pop();
 }
-
-let tokenisedInput = tokenize("1+4*2-5");
-console.log(shunting_yard(tokenisedInput));
-
-
-
-
+let tokenisedInput = tokenize("3+(4*(2-1)*6)+8");
+console.log("Result =", shunting_yard(tokenisedInput));
