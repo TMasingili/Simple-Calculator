@@ -103,6 +103,8 @@ button:active {
 /* Equal Button */
 #equal {
     background: linear-gradient(145deg, #1E90FF, #1a7de3);
+    grid-column: span 2;
+    width: 100%;
 }
 
 #equal:hover {

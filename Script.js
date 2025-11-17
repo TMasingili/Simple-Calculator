@@ -1,143 +1,175 @@
-/* try to make things appear on the caltulator screen
-use a query selector to make caltulator elemts appear on the screen when clicked
-*/
-const visible = document.querySelectorAll(".visible");// anything that can appear on the screen
+const visible = document.querySelectorAll(".visible"); // anything that can appear on the screen
 const screen = document.getElementById("screen");
 const expression = document.getElementById("expression");
-const output = document.getElementById("output")
-let ScreenText="";
-let bracketsOpen = false;// help determine if brackets are opened or closed
-let numbers = ["0","1","2","3","4","5","6","7","8","9"]; // list of numbers used in caculator
-let operators = ["*", "+", "-", "/", "%", "(", ")"];
-let openBracketNum =0;
-let closedBracketNum = 0;// keep track of the number of open or closed brackets
+const output = document.getElementById("output");
 
-visible.forEach(element=>{ // add an evem lestener for all elements that can appear on the screen
-    element.addEventListener("click", event=>{
-      
-        if(element.id === "brackets"){// deal with implementing brackets
-            //console.log("now dealing with brackets")
-            if(bracketsOpen==true){ // case where brackets are opened
-                console.log("brackets are open");
-                if(numbers.includes(lastCharacter()) || lastCharacter()==")"){// if the bracket follows a didgit, then close bracket
-                    ScreenText+=")";
+let ScreenText = "";
+let bracketsOpen = false;
+let openBracketNum = 0;
+let closedBracketNum = 0;
+
+const numbers = ["0","1","2","3","4","5","6","7","8","9"];
+const operators = ["*","+","-","/","%"];
+
+// HELPER FUNCTIONS
+function lastCharacter() {
+    return ScreenText.length > 0 ? ScreenText[ScreenText.length - 1] : "";
+}
+
+function isOperator(char) {
+    return operators.includes(char);
+}
+
+function bracketCloser() {
+    if(openBracketNum === closedBracketNum && openBracketNum !== 0) {
+        bracketsOpen = false;
+    }
+}
+
+// CLICK HANDLER FOR ALL VISIBLE BUTTONS
+visible.forEach(button => {
+    button.addEventListener("click", () => {
+        const char = button.id;
+
+        // BRACKETS
+        if(char === "brackets") {
+            if(bracketsOpen) {
+                if(numbers.includes(lastCharacter()) || lastCharacter() === ")") {
+                    ScreenText += ")";
                     closedBracketNum++;
-                    console.log("ClosedBracketNum: "+ closedBracketNum)
-                    bracketCloser()// set bracketsOpen to false if brackets match
-                } 
-                if(lastCharacter()=="("){
-                    ScreenText+="(";
+                    bracketCloser();
+                } else {
+                    ScreenText += "(";
                     openBracketNum++;
                 }
-            }else{
-                if(lastCharacter()==")"){
-                    ScreenText+="X";
+            } else {
+                if(lastCharacter() && (numbers.includes(lastCharacter()) || lastCharacter() === ")")) {
+                    ScreenText += "*";
                 }
-                console.log(" i came here");
-                ScreenText+="(";
+                ScreenText += "(";
                 openBracketNum++;
-                console.log("OpenBrackets NUM : "+openBracketNum)
-                bracketsOpen=true;
-                console.log("i swicthed on the brackets");
-           }
-        }else{
-            ScreenText+=element.id;
+                bracketsOpen = true;
+            }
+        } 
+        // NUMBERS AND DECIMALS
+        else if(numbers.includes(char) || char === ".") {
+            // prevent multiple decimals in one number
+            if(char === "." && lastNumberHasDecimal()) return;
+            ScreenText += char;
+        } 
+        // OPERATORS
+        else if(isOperator(char)) {
+            if(ScreenText === "") return; // cannot start with operator
+            if(isOperator(lastCharacter())) {
+                // replace last operator with new one
+                ScreenText = ScreenText.slice(0,-1) + char;
+            } else {
+                ScreenText += char;
+            }
         }
-        expression.textContent = ScreenText.trimStart();
-    })
-})
-// add functionality to eqaul button
-document.getElementById("equal").addEventListener("click",event=>{
-    try{
+
+        expression.textContent = ScreenText;
+        output.textContent = "";
+    });
+});
+
+// CHECK IF LAST NUMBER HAS DECIMAL
+function lastNumberHasDecimal() {
+    let i = ScreenText.length - 1;
+    while(i >= 0 && !isOperator(ScreenText[i]) && ScreenText[i] !== "(" && ScreenText[i] !== ")") {
+        if(ScreenText[i] === ".") return true;
+        i--;
+    }
+    return false;
+}
+
+// EQUAL BUTTON
+document.getElementById("equal").addEventListener("click", () => {
+    try {
         let answer = shunting_yard(tokenize(ScreenText));
-        console.log("this is the answer"+answer);
-        output.innerText= " " + " "+ " = "+answer;
-        
-    }catch{
-
+        output.textContent = "= " + answer;
+    } catch {
+        output.textContent = "Error";
     }
-})
+});
 
-function bracketCloser(){
-    if(openBracketNum==closedBracketNum && openBracketNum!=0 && closedBracketNum!=0){
-        bracketsOpen=false;
-        console.log("now the brackets are equal")
-    }
-}
+// CE BUTTON
+document.getElementById("CE").addEventListener("click", () => {
+    ScreenText = "";
+    expression.textContent = "";
+    output.textContent = "";
+    bracketsOpen = false;
+    openBracketNum = 0;
+    closedBracketNum = 0;
+});
 
-function lastCharacter(){
-    return ScreenText[ScreenText.length-1];
-}
+// DEL BUTTON
+document.getElementById("DEL").addEventListener("click", () => {
+    const removedChar = ScreenText.slice(-1);
+    ScreenText = ScreenText.slice(0, -1);
+
+    if(removedChar === "(") openBracketNum--;
+    if(removedChar === ")") closedBracketNum--;
+
+    bracketCloser();
+    expression.textContent = ScreenText;
+    output.textContent = "";
+});
+
+// TOKENIZER AND SHUNTING YARD ALGORITHM
 function tokenize(input) {
     let tokens = [];
     let tempNum = [];
 
-    for (let char of input) {
-        if (numbers.includes(char)) {
+    for(let char of input) {
+        if(numbers.includes(char) || char === ".") {
             tempNum.push(char);
-        } else if (operators.includes(char)) {
-            if (tempNum.length) {
+        } else if(operators.includes(char) || char === "(" || char === ")") {
+            if(tempNum.length) {
                 tokens.push(tempNum.join(""));
                 tempNum = [];
             }
             tokens.push(char);
         }
     }
-    if (tempNum.length) {
-        tokens.push(tempNum.join(""));
-    }
+    if(tempNum.length) tokens.push(tempNum.join(""));
     return tokens;
 }
 
 function shunting_yard(tokens) {
-    let operatorStack = [];
-    let output = [];
-    let precedence = { 
-        "*": 3,
-        "/": 3,
-        "%":3,
-        "+": 2,
-        "-": 2
-         };
+    let opStack = [];
+    let outQueue = [];
+    let precedence = {"*":3,"/":3,"%":3,"+":2,"-":2};
 
-    for (let token of tokens) {
-        if (!isNaN(token)) {
-            output.push(token);
-        } else if (token === "(") {
-            operatorStack.push(token);
-        } else if (token === ")") {
-            while (operatorStack.length && operatorStack[operatorStack.length - 1] !== "(") {
-                output.push(operatorStack.pop());
+    for(let token of tokens) {
+        if(!isNaN(token)) {
+            outQueue.push(parseFloat(token));
+        } else if(token === "(") {
+            opStack.push(token);
+        } else if(token === ")") {
+            while(opStack.length && opStack[opStack.length-1] !== "(") {
+                outQueue.push(opStack.pop());
             }
-            operatorStack.pop(); // remove "("
-        } else if (token in precedence) {
-            while (
-                operatorStack.length &&
-                (operatorStack[operatorStack.length - 1] in precedence) &&
-                precedence[operatorStack[operatorStack.length - 1]] >= precedence[token]
-            ) {
-                output.push(operatorStack.pop());
+            opStack.pop();
+        } else if(token in precedence) {
+            while(opStack.length && opStack[opStack.length-1] in precedence &&
+                  precedence[opStack[opStack.length-1]] >= precedence[token]) {
+                outQueue.push(opStack.pop());
             }
-            operatorStack.push(token);
+            opStack.push(token);
         }
     }
 
-    // Flush remaining operators
-    while (operatorStack.length) {
-        output.push(operatorStack.pop());
-    }
-
-    console.log("Postfix output:", output);
+    while(opStack.length) outQueue.push(opStack.pop());
 
     // Evaluate postfix
     let stack = [];
-    for (let token of output) {
-        if (!isNaN(token)) {
-            stack.push(parseFloat(token));
-        } else {
+    for(let token of outQueue) {
+        if(typeof token === "number") stack.push(token);
+        else {
             let b = stack.pop();
             let a = stack.pop();
-            switch (token) {
+            switch(token) {
                 case "+": stack.push(a + b); break;
                 case "-": stack.push(a - b); break;
                 case "*": stack.push(a * b); break;
@@ -148,8 +180,3 @@ function shunting_yard(tokens) {
     }
     return stack.pop();
 }
-let tokenisedInput = tokenize("3+(4*(2-1)*6)+8");
-console.log("Result =", shunting_yard(tokenisedInput));
-
-
-
