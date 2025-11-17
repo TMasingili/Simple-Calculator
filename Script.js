@@ -3,9 +3,12 @@ use a query selector to make caltulator elemts appear on the screen when clicked
 */
 const visible = document.querySelectorAll(".visible");// anything that can appear on the screen
 const screen = document.getElementById("screen");
+const expression = document.getElementById("expression");
+const output = document.getElementById("output")
 let ScreenText="";
 let bracketsOpen = false;// help determine if brackets are opened or closed
 let numbers = ["0","1","2","3","4","5","6","7","8","9"]; // list of numbers used in caculator
+let operators = ["*", "+", "-", "/", "%", "(", ")"];
 let openBracketNum =0;
 let closedBracketNum = 0;// keep track of the number of open or closed brackets
 
@@ -40,8 +43,7 @@ visible.forEach(element=>{ // add an evem lestener for all elements that can app
         }else{
             ScreenText+=element.id;
         }
-        screen.textContent = ScreenText;
-        
+        expression.textContent = ScreenText.trimStart();
     })
 })
 // add functionality to eqaul button
@@ -49,6 +51,8 @@ document.getElementById("equal").addEventListener("click",event=>{
     try{
         let answer = shunting_yard(tokenize(ScreenText));
         console.log("this is the answer"+answer);
+        output.innerText= " " + " "+ " = "+answer;
+        
     }catch{
 
     }
@@ -64,29 +68,9 @@ function bracketCloser(){
 function lastCharacter(){
     return ScreenText[ScreenText.length-1];
 }
-// function to return sum of 2 numbers
- function add (a,b) {
-    return parseFloat(a) + parseFloat(b);
-}
-// return a - b
-function subract(a,b){
-    return parseFloat(a) - parseFloat(b);
-}
-
-// devide 2 numbers
-function devide(a,b){
-    return parseFloat(a)/parseFloat(b);
-}
-
-// divide a by 100
- function percentage(a){
-    parseFloat(a)/100;
- }
 function tokenize(input) {
     let tokens = [];
     let tempNum = [];
-    let numbers = ["0","1","2","3","4","5","6","7","8","9","."];
-    let operators = ["*", "+", "-", "/", "%", "(", ")"];
 
     for (let char of input) {
         if (numbers.includes(char)) {
@@ -108,7 +92,13 @@ function tokenize(input) {
 function shunting_yard(tokens) {
     let operatorStack = [];
     let output = [];
-    let precedence = { "*": 3, "/": 3, "+": 2, "-": 2 };
+    let precedence = { 
+        "*": 3,
+        "/": 3,
+        "%":3,
+        "+": 2,
+        "-": 2
+         };
 
     for (let token of tokens) {
         if (!isNaN(token)) {

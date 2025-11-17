@@ -9,12 +9,14 @@
 <body>
     <main id="calculator">
         <section id = "screen">  
+            <p id="expression"></p> 
+            <p id="output"></p>
         </section>
         <section id="buttons">
          <button type="button" id="CE">CE</button>
-         <button type="button" class="operator visible" id="brackets">()</button>
-         <button type="button" class="operator visible" id="%">%</button>
          <button type="button" id="DEL">DEL</button>
+         <button type="button" class="visible" id="brackets">()</button>
+         <button type="button" class="operator visible" id="%">%</button>
          <button type="button" class="digit visible" id="7">7</button>
          <button type="button" class="digit visible" id="8">8</button>
          <button type="button" class="digit visible" id="9">9</button>
@@ -29,7 +31,7 @@
          <button type="button" class="operator visible" id="+">+</button>
          <button type="button" class="digit visible" id="0">0</button>
          <button type="button" class="digit visible" id=".">.</button>
-         <button type="button" class="operator visible" id="+-">+/-</button>
+         <button type="button" class="visible negative" id="+-">+/-</button>
          <button type="button" class="operator" id="equal" >=</button>
         </section>
     </main>

@@ -1,98 +1,124 @@
-body{
+/* Center Calculator */
+body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh; /* make the body fill the whole space*/
-   
+    height: 100vh;
+    background: linear-gradient(145deg, #252525, #867a7a);
+    font-family: "Segoe UI", sans-serif;
 }
-#calculator{
+
+/* Calculator Container */
+#calculator {
     display: flex;
     flex-direction: column;
     align-items: center;
-  background-color: #1E1E1E;
-    height: 58%;
-    width: 300px;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    padding: 0 15px;
-    font-size: 1.5rem;
-    
-    
+    background: #1E1E1E;
+    height: auto;
+    width: 330px;
+    border-radius: 1.2rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    padding: 20px;
+    color: white;
 }
-#screen{
-    display: flex;
-    justify-content: flex-end; /* align numbers to the right */
-    align-items: center;
-    
-   
-    height: 30%;
+
+/* Display Screen */
+#screen {
     width: 90%;
-    color: white;
-    justify-self: center;
-    margin-bottom: 25px;
-    margin-top: 30px;
-    font-size: medium;
-    overflow: hidden;
-    word-wrap: break-word;
+    height: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 15px;
     text-align: right;
-    margin-bottom: 50px;
-    border-bottom: 3px solid hotpink;
+    border-radius: 1rem;
+
+    /* Modern glassy effect */
+    background: #ffffff0d;
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.35);
+   
 }
 
-button{
-    border-radius: 50%;
-    width: 65px;
-    height: 65px;
-    background-color:#6A6767;
-    font-size: medium;
+#expression {
+    font-size: 1rem;
+    opacity: 0.6;
+    min-height: 20px;
 }
-#buttons{
+
+#output {
+    font-size: 2.3rem;
+    font-weight: 600;
+    min-height: 40px;
+}
+
+/* Buttons Grid */
+#buttons {
+    margin-top: 25px;
     display: grid;
-    grid-template-columns: repeat(4,65px);
-    gap: 5px;
-    margin-bottom: 20px;
-    
-}
-button:focus {
-  outline: 3px solid #80bdff;
-  outline-offset: 2px;
-}
-.operator {
-    background-color: #FF9500;
-    color: white;
-}
-.operator:hover {
-    background-color: #e58900;
-}
-.digit {
-    background-color: #6A6767;
-    color: white;
+    grid-template-columns: repeat(4, 70px);
+    gap: 12px;
 }
 
-.digit:hover {
-    background-color: #807d7d;
-}
-#equal {
-    background-color: #1E90FF;
+/* Base Button Style */
+button {
+    width: 70px;
+    height: 70px;
+    border-radius: 20px;
+    border: none;
+    font-size: 1.3rem;
+    cursor: pointer;
     color: white;
+
+    background: #3b3b3b;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+
+    transition: 0.15s ease-in-out;
+}
+
+/* Button Hover & Active States */
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+/* Secondary Buttons (C, DEL, brackets, +/-) */
+#CE .negative, #brackets {
+    background-color: #565656;
+}
+
+/* Operators */
+.operator {
+    background: linear-gradient(145deg, #ff9500, #e08600);
+}
+
+.operator:hover {
+    background: linear-gradient(145deg, #ffa733, #e6981f);
+}
+
+/* Equal Button */
+#equal {
+    background: linear-gradient(145deg, #1E90FF, #1a7de3);
 }
 
 #equal:hover {
-    background-color: #187bcd;
+    background: linear-gradient(145deg, #43a1ff, #2c8df0);
 }
 
+/* Digits */
+.digit {
+    background: #3b3b3b;
+}
+
+/* Special red button */
 #CE {
-    background-color: #dc3545;
-    color: white;
+    background: #d63c4a;
 }
 
 #CE:hover {
-    background-color: #b02a37;
-}
-button:active {
-    transform: scale(0.95);
-    background-color: #555;
-}
-button {
-    transition: all 0.1s ease;
+    background: #b82f3d;
 }
